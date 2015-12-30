@@ -11,3 +11,11 @@ project/plugins/project/
 
 # Kafka
 logs/*
+/bin/
+
+#eclipse specific
+.cache-main
+.cache-tests
+.classpath
+.project
+.settings

@@ -54,7 +54,7 @@ class KafkaSpec extends FunSpec with Matchers with BeforeAndAfterEach with Given
       val tweets = fixture.messages
       And("a single-threaded Kafka consumer group")
       // The Kafka consumer group must be running before the first messages are being sent to the topic.
-      val actualTweets = new mutable.SynchronizedQueue[Tweet]
+      val actualTweets = new mutable.Queue[Tweet]
       def consume(m: MessageAndMetadata[Array[Byte], Array[Byte]], c: ConsumerTaskContext): Unit = {
         val tweet = Injection.invert[Tweet, Array[Byte]](m.message)
         for {t <- tweet} {
@@ -94,7 +94,7 @@ class KafkaSpec extends FunSpec with Matchers with BeforeAndAfterEach with Given
       val tweets = fixture.messages
       And("a single-threaded Kafka consumer group")
       // The Kafka consumer group must be running before the first messages are being sent to the topic.
-      val actualTweets = new mutable.SynchronizedQueue[Tweet]
+      val actualTweets = new mutable.Queue[Tweet]
       def consume(m: MessageAndMetadata[Array[Byte], Array[Byte]], c: ConsumerTaskContext) {
         val tweet = Injection.invert[Tweet, Array[Byte]](m.message())
         for {t <- tweet} {

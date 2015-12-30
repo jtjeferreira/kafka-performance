@@ -2,7 +2,7 @@ organization := "com.miguno.kafkastorm"
 
 name := "kafka-storm-starter"
 
-scalaVersion := "2.10.5"
+scalaVersion := "2.11.7"
 
 seq(sbtavro.SbtAvro.avroSettings : _*)
 
@@ -24,8 +24,6 @@ resolvers ++= Seq(
 
 val bijectionVersion = "0.7.1"
 val chillVersion = "0.5.1"
-val sparkVersion = "1.1.1"
-val stormVersion = "0.9.6"
 
 libraryDependencies ++= Seq(
   "com.twitter" %% "bijection-core" % bijectionVersion,
@@ -36,7 +34,7 @@ libraryDependencies ++= Seq(
   // The excludes of jms, jmxtools and jmxri are required as per https://issues.apache.org/jira/browse/KAFKA-974.
   // The exclude of slf4j-simple is because it overlaps with our use of logback with slf4j facade;  without the exclude
   // we get slf4j warnings and logback's configuration is not picked up.
-  "org.apache.kafka" % "kafka_2.10" % "0.8.2.2"
+  "org.apache.kafka" %% "kafka" % "0.8.2.2"
     exclude("javax.jms", "jms")
     exclude("com.sun.jdmk", "jmxtools")
     exclude("com.sun.jmx", "jmxri")
@@ -44,30 +42,22 @@ libraryDependencies ++= Seq(
     exclude("log4j", "log4j")
     exclude("org.apache.zookeeper", "zookeeper")
     exclude("com.101tec", "zkclient"),
-  "org.apache.storm" % "storm-core" % stormVersion % "provided"
-    exclude("org.apache.zookeeper", "zookeeper")
-    exclude("org.slf4j", "log4j-over-slf4j"),
-  "org.apache.storm" % "storm-kafka" % stormVersion
-    exclude("org.apache.zookeeper", "zookeeper"),
-  "org.apache.spark" %% "spark-core" % sparkVersion
-    exclude("org.apache.zookeeper", "zookeeper")
-    exclude("org.slf4j", "slf4j-api")
-    exclude("org.slf4j", "slf4j-log4j12")
-    exclude("org.slf4j", "jul-to-slf4j")
-    exclude("org.slf4j", "jcl-over-slf4j")
-    exclude("com.twitter", "chill_2.10")
-    exclude("log4j", "log4j"),
-  "org.apache.spark" %% "spark-streaming-kafka" % sparkVersion
-    exclude("org.apache.zookeeper", "zookeeper"),
   "com.101tec" % "zkclient" % "0.4"
-    exclude("org.apache.zookeeper", "zookeeper"),
+    exclude("org.apache.zookeeper", "zookeeper")
+    exclude("log4j","log4j"),
   "org.apache.curator" % "curator-test" % "2.4.0"
     exclude("org.jboss.netty", "netty")
-    exclude("org.slf4j", "slf4j-log4j12"),
+    exclude("org.slf4j", "slf4j-log4j12")
+    exclude("log4j","log4j"),
+  //reactivekafka
+  "com.softwaremill.reactivekafka" %% "reactive-kafka-core" % "0.8.4",
   "commons-io" % "commons-io" % "2.4",
   "org.apache.commons" % "commons-pool2" % "2.3",
+  //metrics
+  "io.dropwizard.metrics" % "metrics-core" % "3.1.0",
   // Logback with slf4j facade
   "ch.qos.logback" % "logback-classic" % "1.1.2",
+  "org.slf4j" % "log4j-over-slf4j" % "1.7.2",
   // Test dependencies
   "org.scalatest" %% "scalatest" % "2.2.4" % "test",
   "org.mockito" % "mockito-all" % "1.9.5" % "test"
@@ -147,3 +137,5 @@ testOptions in Test += Tests.Argument(TestFrameworks.ScalaTest, "-o")
 instrumentSettings
 
 mainClass in (Compile,run) := Some("com.miguno.kafkastorm.storm.topologies.KafkaStormDemo")
+
+cancelable in Global := true

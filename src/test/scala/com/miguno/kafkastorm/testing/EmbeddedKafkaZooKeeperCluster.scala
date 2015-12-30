@@ -1,15 +1,20 @@
 package com.miguno.kafkastorm.testing
 
 import java.util.Properties
-
 import com.miguno.kafkastorm.kafka.{ConsumerTaskContext, KafkaConsumerApp, KafkaEmbedded, KafkaProducerApp}
 import com.miguno.kafkastorm.logging.LazyLogging
 import com.miguno.kafkastorm.zookeeper.ZooKeeperEmbedded
 import kafka.message.MessageAndMetadata
 import org.apache.curator.test.InstanceSpec
-
 import scala.concurrent.duration._
 import scala.util.{Success, Try}
+import akka.actor._
+import akka.stream._
+import org.reactivestreams._
+import com.softwaremill.react.kafka._
+import kafka.serializer.DefaultDecoder
+import kafka.serializer.DefaultEncoder
+
 
 /**
  * Starts embedded instances of a Kafka broker and a ZooKeeper server.  Used only for testing.
@@ -32,7 +37,7 @@ class EmbeddedKafkaZooKeeperCluster(zookeeperPort: Integer = InstanceSpec.getRan
 
   val consumerApps = collection.mutable.Buffer[KafkaConsumerApp[_]]()
   val producerApps = collection.mutable.Buffer[KafkaProducerApp]()
-
+  
   // We intentionally use a fail-fast approach here.  This makes the downstream test code simpler because we want our
   // tests to fail immediately in case we run into problems here.
   // TODO: Do we need idempotency for the start() method, i.e. don't let clients run start() twice?
@@ -73,6 +78,7 @@ class EmbeddedKafkaZooKeeperCluster(zookeeperPort: Integer = InstanceSpec.getRan
     for (producer <- producerApps) {
       Try(producer.shutdown())
     }
+    
     kafka.stop()
     zookeeper.stop()
   }
@@ -99,7 +105,7 @@ class EmbeddedKafkaZooKeeperCluster(zookeeperPort: Integer = InstanceSpec.getRan
    * @return
    */
   def createAndStartConsumer[T](topic: String,
-                                consume: (MessageAndMetadata[Key, Val], ConsumerTaskContext) => Unit): Try[KafkaConsumerApp[T]] = {
+                                consume: (MessageAndMetadata[Key, Val], ConsumerTaskContext) => Unit): Unit = {
     val consumerApp = {
       val numStreams = 1
       val config = {
@@ -115,7 +121,26 @@ class EmbeddedKafkaZooKeeperCluster(zookeeperPort: Integer = InstanceSpec.getRan
 
     consumerApps += consumerApp
     logger.debug(s"Consumer app created for topic: $topic. Total consumers running: ${consumerApps.size}")
-    Success(consumerApp)
+  }
+  
+  def createReactiveConsumer(topic: String)(implicit actorSystem : ActorSystem) = {
+    val reactiveKafka = new ReactiveKafka()
+    reactiveKafka.consume(ConsumerProperties(
+     brokerList = kafka.brokerList,
+     zooKeeperHost = zookeeper.connectString,
+     topic = topic,
+     groupId = "kafka-storm-starter-test-consumer",
+     decoder = new DefaultDecoder()
+    ))
+  }
+  
+  def createReactiveProducer(topic: String)(implicit actorSystem : ActorSystem) = {
+    val reactiveKafka = new ReactiveKafka()
+    reactiveKafka.publish(ProducerProperties(
+     brokerList = kafka.brokerList,
+     topic = topic,
+     encoder = new DefaultEncoder()
+    ))
   }
 
 }
