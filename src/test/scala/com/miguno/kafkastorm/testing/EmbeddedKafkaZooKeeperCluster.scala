@@ -95,6 +95,11 @@ class EmbeddedKafkaZooKeeperCluster(zookeeperPort: Integer = InstanceSpec.getRan
     producerApps += producer
     Success(producer)
   }
+  
+  private def randomGroupId() = {
+    val random = (new scala.util.Random).nextInt()
+    s"test-consumer-$random"
+  }
 
   /**
    * For the moment we only allow the creation of new consumers if the backing ZooKeeper server is up and running.
@@ -110,7 +115,7 @@ class EmbeddedKafkaZooKeeperCluster(zookeeperPort: Integer = InstanceSpec.getRan
       val numStreams = 1
       val config = {
         val c = new Properties
-        c.put("group.id", "kafka-storm-starter-test-consumer")
+        c.put("group.id", randomGroupId)
         c
       }
       new KafkaConsumerApp[T](topic, zookeeper.connectString, numStreams, config)
@@ -129,7 +134,7 @@ class EmbeddedKafkaZooKeeperCluster(zookeeperPort: Integer = InstanceSpec.getRan
      brokerList = kafka.brokerList,
      zooKeeperHost = zookeeper.connectString,
      topic = topic,
-     groupId = "kafka-storm-starter-test-consumer",
+     groupId = randomGroupId,
      decoder = new DefaultDecoder()
     ))
   }
