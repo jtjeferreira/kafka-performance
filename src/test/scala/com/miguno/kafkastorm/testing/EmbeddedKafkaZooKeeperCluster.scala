@@ -14,6 +14,7 @@ import org.reactivestreams._
 import com.softwaremill.react.kafka._
 import kafka.serializer.DefaultDecoder
 import kafka.serializer.DefaultEncoder
+import akka.stream.actor.WatermarkRequestStrategy
 
 
 /**
@@ -139,13 +140,13 @@ class EmbeddedKafkaZooKeeperCluster(zookeeperPort: Integer = InstanceSpec.getRan
     ))
   }
   
-  def createReactiveProducer(topic: String)(implicit actorSystem : ActorSystem) = {
+  def createReactiveProducer(topic: String, highWatermarkRequestStrategy: Int = 10)(implicit actorSystem : ActorSystem) = {
     val reactiveKafka = new ReactiveKafka()
     reactiveKafka.publish(ProducerProperties(
      brokerList = kafka.brokerList,
      topic = topic,
      encoder = new DefaultEncoder()
-    ))
+    ), () => WatermarkRequestStrategy(highWatermarkRequestStrategy))
   }
 
 }
