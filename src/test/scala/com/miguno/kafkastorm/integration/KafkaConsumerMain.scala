@@ -64,7 +64,7 @@ object ReactiveKafkaConsumerMain extends App with KafkaConsumerTest {
   
   def createAndStartConsumer(f: (MessageAndMetadata[Array[Byte], Array[Byte]]) => Unit) = {
     val publisher = cluster.createReactiveConsumer(topic.name)
-    Source.fromPublisher(publisher).map(m => f(m)).to(Sink.ignore).run()
+    Source(publisher).map(m => f(m)).to(Sink.ignore).run()
   }
   
   override def exit() = {

@@ -50,7 +50,7 @@ libraryDependencies ++= Seq(
     exclude("org.slf4j", "slf4j-log4j12")
     exclude("log4j","log4j"),
   //reactivekafka
-  "com.softwaremill.reactivekafka" %% "reactive-kafka-core" % "0.8.4",
+  "com.softwaremill.reactivekafka" %% "reactive-kafka-core" % "0.8.3",
   "commons-io" % "commons-io" % "2.4",
   "org.apache.commons" % "commons-pool2" % "2.3",
   //metrics
