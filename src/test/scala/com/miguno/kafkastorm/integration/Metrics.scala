@@ -11,5 +11,4 @@ trait Metrics {
     .convertRatesTo(TimeUnit.SECONDS)
     .convertDurationsTo(TimeUnit.MILLISECONDS)
     .build();
-  reporter.start(5, TimeUnit.SECONDS);
 }
