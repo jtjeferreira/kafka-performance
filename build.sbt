@@ -34,23 +34,19 @@ libraryDependencies ++= Seq(
   // The excludes of jms, jmxtools and jmxri are required as per https://issues.apache.org/jira/browse/KAFKA-974.
   // The exclude of slf4j-simple is because it overlaps with our use of logback with slf4j facade;  without the exclude
   // we get slf4j warnings and logback's configuration is not picked up.
-  "org.apache.kafka" %% "kafka" % "0.8.2.2"
+  "org.apache.kafka" %% "kafka" % "0.9.0.0"
     exclude("javax.jms", "jms")
     exclude("com.sun.jdmk", "jmxtools")
     exclude("com.sun.jmx", "jmxri")
     exclude("org.slf4j", "slf4j-simple")
     exclude("log4j", "log4j")
-    exclude("org.apache.zookeeper", "zookeeper")
-    exclude("com.101tec", "zkclient"),
-  "com.101tec" % "zkclient" % "0.4"
-    exclude("org.apache.zookeeper", "zookeeper")
-    exclude("log4j","log4j"),
+    exclude("org.slf4j", "slf4j-log4j12"),
   "org.apache.curator" % "curator-test" % "2.4.0"
     exclude("org.jboss.netty", "netty")
     exclude("org.slf4j", "slf4j-log4j12")
     exclude("log4j","log4j"),
   //reactivekafka
-  "com.softwaremill.reactivekafka" %% "reactive-kafka-core" % "0.8.4",
+  "com.softwaremill.reactivekafka" %% "reactive-kafka-core" % "0.9.0",
   "commons-io" % "commons-io" % "2.4",
   "org.apache.commons" % "commons-pool2" % "2.3",
   //metrics

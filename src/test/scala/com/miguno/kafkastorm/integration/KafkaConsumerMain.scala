@@ -11,11 +11,10 @@ import com.twitter.bijection.avro.SpecificAvroCodecs
 import akka.stream.scaladsl._
 import akka.stream.ActorMaterializer
 import akka.actor.ActorSystem
-import kafka.message.MessageAndMetadata
 
 trait KafkaConsumerTest extends Metrics {
 
-  def createAndStartConsumer(f: (MessageAndMetadata[Array[Byte], Array[Byte]]) => Unit): Unit
+  def createAndStartConsumer(f: (Array[Byte]) => Unit): Unit
   
   val topic = new KafkaTopic("topic")
   val cluster = new EmbeddedKafkaZooKeeperCluster(topics=Seq(topic))
@@ -26,7 +25,7 @@ trait KafkaConsumerTest extends Metrics {
     cluster.start()
     createAndStartConsumer{ m =>
       requests.mark
-      val tweet = Injection.invert[Tweet, Array[Byte]](m.message()).get
+      val tweet = Injection.invert[Tweet, Array[Byte]](m).get
       if(tweet.getText.toInt >= times) exit()
     }
     
@@ -49,9 +48,9 @@ trait KafkaConsumerTest extends Metrics {
 
 object KafkaConsumerMain extends App with KafkaConsumerTest {
   run(args(0).toInt)
-  def createAndStartConsumer(f: (MessageAndMetadata[Array[Byte], Array[Byte]]) => Unit) = {
+  def createAndStartConsumer(f: (Array[Byte]) => Unit) = {
     cluster.createAndStartConsumer(topic.name, { (m,c) =>
-      f(m)
+      f(m.message())
     })
   }
   
@@ -62,9 +61,9 @@ object ReactiveKafkaConsumerMain extends App with KafkaConsumerTest {
   lazy implicit val materializer = ActorMaterializer()
   run(args(0).toInt)
   
-  def createAndStartConsumer(f: (MessageAndMetadata[Array[Byte], Array[Byte]]) => Unit) = {
+  def createAndStartConsumer(f: (Array[Byte]) => Unit) = {
     val publisher = cluster.createReactiveConsumer(topic.name)
-    Source.fromPublisher(publisher).map(m => f(m)).to(Sink.ignore).run()
+    Source.fromPublisher(publisher).map(m => f(m.value())).to(Sink.ignore).run()
   }
   
   override def exit() = {

@@ -12,6 +12,7 @@ import com.twitter.bijection.avro.SpecificAvroCodecs
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
 import akka.stream.scaladsl._
+import com.softwaremill.react.kafka.ProducerMessage
 
 trait KafkaConsumerProducerTest extends Metrics {
   def createAndStartConsumerProducer(topicIn: String, topicOut: String): Unit
@@ -67,7 +68,7 @@ object ReactiveKafkaConsumerProducerMain extends App with KafkaConsumerProducerT
   def createAndStartConsumerProducer(topicIn: String, topicOut: String) = {
     val publisher = cluster.createReactiveConsumer(topicIn)
     val subscriber = cluster.createReactiveProducer(topicOut, args(1).toInt)
-    Source.fromPublisher(publisher).map(m=>m.message()).to(Sink.fromSubscriber(subscriber)).run()
+    Source.fromPublisher(publisher).map(m=>ProducerMessage(m)).to(Sink.fromSubscriber(subscriber)).run()
   }
   
   override def exit() = {
