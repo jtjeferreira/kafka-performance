@@ -65,9 +65,9 @@ object ReactiveKafkaConsumerProducerMain extends App with KafkaConsumerProducerT
   run(args(0).toInt)
   
   def createAndStartConsumerProducer(topicIn: String, topicOut: String) = {
-    val publisher = cluster.createReactiveConsumer(topicIn)
-    val subscriber = cluster.createReactiveProducer(topicOut, args(1).toInt)
-    Source.fromPublisher(publisher).map(m=>m.message()).to(Sink.fromSubscriber(subscriber)).run()
+    val source = cluster.createReactiveConsumer(topicIn)
+    val sink = cluster.createReactiveProducer(topicOut)
+    source.map(m=>m.message()).to(sink).run()
   }
   
   override def exit() = {

@@ -131,7 +131,7 @@ class EmbeddedKafkaZooKeeperCluster(zookeeperPort: Integer = InstanceSpec.getRan
   
   def createReactiveConsumer(topic: String)(implicit actorSystem : ActorSystem) = {
     val reactiveKafka = new ReactiveKafka()
-    reactiveKafka.consume(ConsumerProperties(
+    reactiveKafka.graphStageSource(ConsumerProperties(
      brokerList = kafka.brokerList,
      zooKeeperHost = zookeeper.connectString,
      topic = topic,
@@ -140,13 +140,13 @@ class EmbeddedKafkaZooKeeperCluster(zookeeperPort: Integer = InstanceSpec.getRan
     ))
   }
   
-  def createReactiveProducer(topic: String, highWatermarkRequestStrategy: Int = 10)(implicit actorSystem : ActorSystem) = {
+  def createReactiveProducer(topic: String)(implicit actorSystem : ActorSystem) = {
     val reactiveKafka = new ReactiveKafka()
-    reactiveKafka.publish(ProducerProperties(
+    reactiveKafka.graphStageSink(ProducerProperties(
      brokerList = kafka.brokerList,
      topic = topic,
      encoder = new DefaultEncoder()
-    ), () => WatermarkRequestStrategy(highWatermarkRequestStrategy))
+    ))
   }
 
 }
