@@ -19,7 +19,8 @@ net.virtualvoid.sbt.graph.Plugin.graphSettings
 
 resolvers ++= Seq(
   "typesafe-repository" at "http://repo.typesafe.com/typesafe/releases/",
-  "clojars-repository" at "https://clojars.org/repo"
+  "clojars-repository" at "https://clojars.org/repo",
+  "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
 )
 
 val bijectionVersion = "0.7.1"
@@ -46,7 +47,7 @@ libraryDependencies ++= Seq(
     exclude("org.slf4j", "slf4j-log4j12")
     exclude("log4j","log4j"),
   //reactivekafka
-  "com.softwaremill.reactivekafka" %% "reactive-kafka-core" % "0.9.0",
+  "com.softwaremill.reactivekafka" %% "reactive-kafka-core" % "0.9.1-SNAPSHOT",
   "commons-io" % "commons-io" % "2.4",
   "org.apache.commons" % "commons-pool2" % "2.3",
   //metrics
