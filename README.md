@@ -7,7 +7,7 @@ This is a fork of [kafka-storm-starter](https://github.com/miguno/kafka-storm-st
 ---
 
 # Test Cases
-The tests use kafka 0.8.2.2 and reactive-kafka 0.8.4 (which uses akka-streams 2)
+The tests use kafka 0.9.0.0 and reactive-kafka 0.9.1-SNAPSHOT (which uses akka-streams 2 and grapstage)
 
 ## Consumer
 
@@ -29,11 +29,11 @@ This "flow" is tested by creating a producer that sends N messages to "topicIn" 
 
 Nr of messages  | vanilla api (rps) | reactive-kafka api (rps) |
 --------------- | -----------------:| ------------------------:|
-10     | 3.39     | 3.54
-100    | 32.17    | 31.51
-1000   | 265.93   | 257.58
-10000  | 1,516.64 | 1,588.79
-100000 | 5,821.53 | 5,841.08
+10     | 2.54     | 1.46
+100    | 22.73    | 14.93
+1000   | 227.74   | 140.99
+10000  | 1,286.33 | 1,196.80
+100000 | 4,918.49 | 4,814.38
 
 ![Consumer results](images/Consumer Vanilla vs Reactive.png)
 
@@ -41,10 +41,10 @@ Nr of messages  | vanilla api (rps) | reactive-kafka api (rps) |
 
 Nr of messages  | vanilla api (rps) | reactive-kafka api (rps) |
 --------------- | -----------------:| ------------------------:|
-10     | 2.72     | 2.71
-100    | 22.93    | 24.58
-1000   | 176.59   | 173.61
-10000  | 1,053.37 | 854.11
-100000 | 4,531.67 | 2,398.79
+10     | 2.43     | 1.29
+100    | 20.49    | 13.95
+1000   | 159.76   | 137.55
+10000  | 977.11   | 1,135.32
+100000 | 3,964.75 | 3,693.20
 
 ![ConsumerProducer results](images/ConsumerProducer Vanilla vs Reactive.png)
